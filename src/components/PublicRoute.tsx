@@ -1,22 +1,25 @@
 "use client"
 
+import type React from "react"
+
 import { useAuth } from "@/contexts/AuthContext"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 
-export default function HomePage() {
+interface PublicRouteProps {
+  children: React.ReactNode
+  redirectTo?: string
+}
+
+export function PublicRoute({ children, redirectTo = "/dashboard" }: PublicRouteProps) {
   const { user, loading } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
-    if (!loading) {
-      if (user) {
-        router.push("/dashboard")
-      } else {
-        router.push("/login")
-      }
+    if (!loading && user) {
+      router.push(redirectTo)
     }
-  }, [user, loading, router])
+  }, [user, loading, router, redirectTo])
 
   if (loading) {
     return (
@@ -26,5 +29,5 @@ export default function HomePage() {
     )
   }
 
-  return null
+  return <>{children}</>
 }
